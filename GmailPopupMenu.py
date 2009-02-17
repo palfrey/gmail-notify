@@ -32,7 +32,7 @@ class GmailPopupMenu:
 
 		return
 
-	def show_menu(self, event):
+	def show_menu(self, button, time):
 		# Display the menu
-		self.menu.popup( None, None, None, event.button, event.time)
+		self.menu.popup( None, None, None, button, time)
 		return

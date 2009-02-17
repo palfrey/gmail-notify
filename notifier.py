@@ -6,7 +6,6 @@ pygtk.require('2.0')
 import gtk
 import time
 import os
-import pytrayicon
 import sys
 import warnings
 import ConfigParser
@@ -82,30 +81,17 @@ class GmailNotify:
 		self.popuptimer=0
 		self.waittimer=0
 		# Create the tray icon object
-		self.tray = pytrayicon.TrayIcon(self.lang.get_string(21));
-		self.eventbox = gtk.EventBox()
-		self.tray.add(self.eventbox)
-		self.eventbox.connect("button_press_event", self.tray_icon_clicked)
-		# Tray icon drag&drop options
-		self.eventbox.drag_dest_set(
-		    gtk.DEST_DEFAULT_ALL,
-		    [('_NETSCAPE_URL', 0, 0),('text/uri-list ', 0, 1),('x-url/http', 0, 2)],
-		    gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_MOVE)
-		# Create the tooltip for the tray icon
-		self._tooltip = gtk.Tooltips()
+		self.tray = gtk.StatusIcon()
+		self.tray.set_tooltip(self.lang.get_string(21))
 		# Set the image for the tray icon
-		self.imageicon = gtk.Image()
-		pixbuf = gtk.gdk.pixbuf_new_from_file( ICON_PATH )
-		scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
-		self.imageicon.set_from_pixbuf(scaled_buf)
-		self.eventbox.add(self.imageicon)
-		# Show the tray icon
-		self.tray.show_all()
+		self.tray.set_from_file(ICON_PATH)
+		self.tray.connect('popup-menu',self.tray_icon_clicked)
 		# Create the popup menu
 		self.popup_menu = GmailPopupMenu.GmailPopupMenu( self)
 		pynotify.init("gmail-notify")
 		self.notify = pynotify.Notification(self.lang.get_string(21), "")
 		self.notify.add_action("default", "Default Action", self.event_box_clicked)
+		self.notify.attach_to_status_icon(self.tray)
 
 		self.init=1
 		while gtk.events_pending():
@@ -124,7 +110,7 @@ class GmailNotify:
 			return 0
 		self.dont_connect=1
 		print "connecting..."
-		self._tooltip.set_tip(self.tray,self.lang.get_string(13))
+		self.tray.set_tooltip(self.lang.get_string(13))
 		while gtk.events_pending():
 			gtk.main_iteration( gtk.TRUE)
 		# Attemp connection
@@ -132,12 +118,12 @@ class GmailNotify:
 			self.connection=gmailatom.GmailAtom(self.options['gmailusername'],self.options['gmailpassword'])
 			self.connection.refreshInfo()
 			print "connection successful... continuing"
-			self._tooltip.set_tip(self.tray,self.lang.get_string(14))
+			self.tray.set_tooltip(self.lang.get_string(14))
 			self.dont_connect=0
 			return 1
 		except:
 			print "login failed, will retry"
-			self._tooltip.set_tip(self.tray,self.lang.get_string(15))
+			self.tray.set_tooltip(self.lang.get_string(15))
 			self.notify.update(self.lang.get_string(15),self.lang.get_string(16))
 			self.show_popup()
 			self.dont_connect=0
@@ -166,8 +152,6 @@ class GmailNotify:
 			return gtk.TRUE
 
 		# Update tray icon
-		self.eventbox.remove(self.imageicon)
-		self.imageicon = gtk.Image()
 
 		if attrs[1]>0:
 			print str(attrs[1])+" new messages"
@@ -180,19 +164,16 @@ class GmailNotify:
 			print str(attrs[0])+" unread messages"
 			s = ' ' 
 			if attrs[0]>1: s=self.lang.get_string(35)+" "
-			self._tooltip.set_tip(self.tray,(self.lang.get_string(19))%{'u':attrs[0],'s':s})
+			self.tray.set_tooltip((self.lang.get_string(19))%{'u':attrs[0],'s':s})
 			pixbuf = gtk.gdk.pixbuf_new_from_file( ICON2_PATH )
 		else:
 			print "no new messages"
-			self._tooltip.set_tip(self.tray,self.lang.get_string(18))
+			self.tray.set_tooltip(self.lang.get_string(18))
 			pixbuf = gtk.gdk.pixbuf_new_from_file( ICON_PATH )
 			self.notify.update(self.lang.get_string(21),self.lang.get_string(18))
 		
-		#self.notify.show()
 		scaled_buf = pixbuf.scale_simple(24,24,gtk.gdk.INTERP_BILINEAR)
-		self.imageicon.set_from_pixbuf(scaled_buf)
-		self.eventbox.add(self.imageicon)
-		self.tray.show_all()
+		self.tray.set_from_pixbuf(scaled_buf)
 		self.unreadmsgcount=attrs[0]
 		
 		self.mailcheck=0
@@ -235,9 +216,9 @@ class GmailNotify:
 		self.notify.set_timeout(pynotify.EXPIRES_DEFAULT)
 		self.notify.show()
 
-	def tray_icon_clicked(self,signal,event):
-		if event.button==3:
-			self.popup_menu.show_menu(event)
+	def tray_icon_clicked(self,status_icon, button, activate_time):
+		if button==3:
+			self.popup_menu.show_menu(button, activate_time)
 		else:
 			self.show_popup()
 
