@@ -43,30 +43,22 @@ def shortenstring(text,characters):
 class GmailNotify:
 
 	configWindow = None
-        options = None
+	options = None
 
 	def __init__(self):
 		self.init=0
 		print "Gmail Notifier v1.6.1b ("+time.strftime("%Y/%m/%d %H:%M:%S", time.localtime())+")"
 		print "----------"
-        	# Configuration window
-	        self.configWindow = GmailConfig.GmailConfigWindow( )
-        	# Reference to global options
-	        self.options = self.configWindow.options
-                # Check if there is a user and password, if not, load config window
-                while ( self.options["gmailusername"] == None or self.options["gmailpassword"] == None ):
-                        self.configWindow.show()
+		# Configuration window
+		self.configWindow = GmailConfig.GmailConfigWindow( )
+		# Reference to global options
+		self.options = self.configWindow.options
+		# Check if there is a user and password, if not, load config window
+		while ( self.options["gmailusername"] == None or self.options["gmailpassword"] == None ):
+				self.configWindow.show()
 		# Load selected language
 		self.lang = self.configWindow.get_lang()
 		print "selected language: "+self.lang.get_name()
-		# Creates the main window
-		self.window = gtk.Window(gtk.WINDOW_POPUP)
-		self.window.set_title(self.lang.get_string(21))
-		self.window.set_resizable(1)
-		self.window.set_decorated(0)
-		self.window.set_keep_above(1)
-		self.window.stick()
-		self.window.hide()	
 		# Define some flags
 		self.senddown=0
 		self.popup=0
@@ -231,7 +223,7 @@ class GmailNotify:
 		dialog.move( gtk.gdk.screen_width()/2-dialog.width/2, gtk.gdk.screen_height()/2-dialog.height/2)
 		ret = dialog.run()
 		if( ret==gtk.RESPONSE_YES):
-		    gtk.main_quit(0)
+			gtk.main_quit(0)
 		dialog.destroy()
 
 	def gotourl( self, wg=None):
@@ -271,15 +263,8 @@ class GmailNotify:
 		self.connect()
 		self.mail_check()
 
-		# Update popup location
-		self.window.resize(180,1)
-		self.width, self.height = self.window.get_size()
-		self.height +=self.options["voffset"]
-		self.width +=self.options["hoffset"]
-		self.window.move(gtk.gdk.screen_width() - self.width, gtk.gdk.screen_height() - self.height)
-
 		# Update language
-                self.lang=self.configWindow.get_lang()	
+		self.lang=self.configWindow.get_lang()
 
 		# Update popup menu
 		self.popup_menu = GmailPopupMenu.GmailPopupMenu(self)
