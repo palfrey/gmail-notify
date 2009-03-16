@@ -126,9 +126,6 @@ class GmailNotify:
 		if self.mailcheck==1:
 			print "self.mailcheck=1"
 			return gtk.TRUE
-		# If popup is up, destroy it
-		if self.popup==1:
-			self.destroy_popup()
 		self.mailcheck=1
 		print "----------"
 		print "checking for new mail ("+time.strftime("%Y/%m/%d %H:%M:%S", time.localtime())+")"
@@ -233,7 +230,6 @@ class GmailNotify:
 
 	def show_quota_info( self, event):
 		print "Not available"
-		#if self.popup==1:self.destroy_popup()
 		#print "----------"
 		#print "retrieving quota info"
 		#while gtk.events_pending()!=0:
@@ -250,7 +246,6 @@ class GmailNotify:
 
 	def update_config(self, event=None):
 		# Kill all timers
-		if self.popup==1:self.destroy_popup()
 		if self.init==1:gtk.timeout_remove(self.maintimer)
 		# Run the configuration dialog
 		self.configWindow.show()
