@@ -4,6 +4,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 import time
 import os
 import sys
@@ -202,8 +203,11 @@ class GmailNotify:
 			return (unreadmsgcount,0, sender, subject, finalsnippet)
 
 	def show_popup(self):
-		self.notify.set_timeout(pynotify.EXPIRES_DEFAULT)
-		self.notify.show()
+		try:
+			self.notify.set_timeout(pynotify.EXPIRES_DEFAULT)
+			self.notify.show()
+		except gobject.GError: # ignore errors here
+			pass
 
 	def tray_icon_clicked(self,status_icon, button, activate_time):
 		if button==3:
