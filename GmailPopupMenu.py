@@ -15,7 +15,6 @@ class GmailPopupMenu:
 		# Connect the events
 		self.item_check.connect( 'activate', gmailnotify.mail_check)
 		self.item_usage.connect( 'activate', gmailnotify.show_quota_info)
-               	self.item_inbox.connect( 'activate', gmailnotify.gotourl)
 		self.item_conf.connect( 'activate', gmailnotify.update_config)
 		self.item_exit.connect( 'activate', gmailnotify.exit)
 		# Create the menu

@@ -83,7 +83,6 @@ class GmailNotify:
 		self.popup_menu = GmailPopupMenu.GmailPopupMenu( self)
 		pynotify.init("gmail-notify")
 		self.notify = pynotify.Notification(self.lang.get_string(21), "")
-		self.notify.add_action("default", "Default Action", self.event_box_clicked)
 		self.notify.attach_to_status_icon(self.tray)
 
 		self.init=1
@@ -215,9 +214,6 @@ class GmailNotify:
 		else:
 			self.show_popup()
 
-	def event_box_clicked(self, notify, action):
-		self.gotourl()
-
 	def exit(self, event):
 		dialog = gtk.MessageDialog( None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, self.lang.get_string(5))
 		dialog.width, dialog.height = dialog.get_size()
@@ -226,11 +222,6 @@ class GmailNotify:
 		if( ret==gtk.RESPONSE_YES):
 			gtk.main_quit(0)
 		dialog.destroy()
-
-	def gotourl( self, wg=None):
-		print "----------"
-		print "launching browser "+self.options['browserpath']+" http://gmail.google.com"
-		os.system(self.options['browserpath']+" http://gmail.google.com &")	
 
 	def show_quota_info( self, event):
 		print "Not available"
